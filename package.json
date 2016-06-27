@@ -1,0 +1,35 @@
+{
+  "name": "sql-filter",
+  "description": "Create SQL filters from patterns",
+  "author": "Yanick Rochon <yanick.rochon@gmail.com>",
+  "version": "1.0.0",
+  "license": "ISC",
+  "keywords": [
+    "sql",
+    "filter",
+    "builder"
+  ],
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test",
+    "test-cov": "istanbul cover _mocha",
+    "test-travis": "istanbul cover _mocha --report lcovonly"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yanickrochon/sql-filter.git"
+  },
+  "homepage": "https://github.com/yanickrochon/sql-filter#readme",
+  "bugs": {
+    "url": "https://github.com/yanickrochon/sql-filter/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "istanbul": "^0.4.4",
+    "mocha": "^2.5.3",
+    "should": "^9.0.2"
+  }
+}
