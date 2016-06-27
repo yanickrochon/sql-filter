@@ -91,7 +91,7 @@ describe('Testing Compiler', function () {
     compile({
       "array": "a",
       "path": [ "b" ]
-    }, 'test').should.deepEqual({ 'a': { 'b': 'test' } })
+    }, 'test').should.deepEqual({ '@a': { 'b': 'test' } })
 
     compile({
       "path": [
@@ -111,7 +111,7 @@ describe('Testing Compiler', function () {
         },
         "f"
       ]
-    }, 'test').should.deepEqual({ $OR: { 'a.b': { 'c.f': 'test' }, 'a.d': { 'e.f': 'test' } } });
+    }, 'test').should.deepEqual({ $OR: { '@a.b': { 'c.f': 'test' }, '@a.d': { 'e.f': 'test' } } });
 
     compile({
       "path": [
@@ -136,7 +136,39 @@ describe('Testing Compiler', function () {
         },
         "g"
       ]
-    }, 'test').should.deepEqual({ $OR: { 'a.b': { $AND: { 'c.g': 'test', 'd.g': 'test' } }, 'a.e': { 'f.g': 'test'} } })
+    }, 'test').should.deepEqual({ $OR: { '@a.b': { $AND: { 'c.g': 'test', 'd.g': 'test' } }, '@a.e': { 'f.g': 'test'} } })
+  });
+
+  it('should compile two arrays', function () {
+    compile({
+      "array": "a",
+      "path": [
+        {
+          "array": "b",
+          "path": [ "c" ]
+        }
+      ]
+    }, 'test').should.deepEqual({ '@a': { '@b': { 'c': 'test' } } });
+
+    compile({
+     "path": [
+        "a",
+        {
+          "glue": "OR",
+          "list": [
+            {
+              "array": "b",
+              "path": [ "c" ]
+            },
+            {
+              "array": "d",
+              "path": [ "e" ]
+            }
+          ]
+        },
+        "f"
+      ]
+    }, 'test').should.deepEqual({ $OR: { '@a.b': { 'c.f': 'test' }, '@a.d': { 'e.f': 'test' } } });
   });
 
 });

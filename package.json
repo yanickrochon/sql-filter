@@ -9,7 +9,7 @@
     "filter",
     "builder"
   ],
-  "main": "index.js",
+  "main": "lib/filter.js",
   "directories": {
     "test": "test"
   },
