@@ -15,5 +15,5 @@ FieldPath
  = f:( FieldList / FieldArray / FieldName) n:('.' ( FieldList / FieldArray / FieldName)) + { return { path: [f].concat(n.map(function (i) { return i[1]; })) }; }
 
 FieldList
- = '{{' list:( Expression Space* ','? Space*)+ '}}' { return { glue: 'AND', list: list.map(function (i) { return i[0]; }) }; }
- / '{' list:( Expression Space* ','? Space*)+ '}' { return { glue: 'OR', list: list.map(function (i) { return i[0]; }) }; }
+ = '{{' list:( l:Expression r:( Space* ','? Space* e:Expression { return e; } )* { return [l].concat(r); }  ) '}}' { return { glue: 'AND', list: list }; }
+ / '{' list:( l:Expression r:( Space* ','? Space* e:Expression { return e; } )* { return [l].concat(r); }  ) '}' { return { glue: 'OR', list: list }; }

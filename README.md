@@ -12,7 +12,7 @@ This module is not complete, and will be available and documented, soon!
 
 ## Install
 
-`npm i sql-filter --save` *(Not published, yet!)*
+`npm i sql-filter --save`
 
 ## Database Adapters
 

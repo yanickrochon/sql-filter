@@ -169,6 +169,20 @@ describe('Testing Compiler', function () {
         "f"
       ]
     }, 'test').should.deepEqual({ $OR: { '@a.b': { 'c.f': 'test' }, '@a.d': { 'e.f': 'test' } } });
+
+    compile({
+      "glue": "OR",
+      "list": [
+        {
+          "array": "a",
+          "path": [ "b" ]
+        },
+        {
+          "array": "a",
+          "path": [ "c" ]
+        }
+     ]
+   }, 'test').should.deepEqual({ $OR: { '@a': { 'b': 'test', 'c': 'test' } } });
   });
 
 });
