@@ -8,7 +8,10 @@ Create simple to complex SQL filters using glob-like patterns.
 
 ## Dislaimer
 
-This module is not complete, and will be available and documented, soon!
+This module is still in development, and the first major version should be
+released soon! While the generated queries should be optimal, more tests are
+required against various data types and structures.
+
 
 ## Install
 
@@ -16,12 +19,46 @@ This module is not complete, and will be available and documented, soon!
 
 ## Database Adapters
 
-* **PostreSQL** : *coming soon...*
-* **MySQL** : *help wanted!*
+* **PostreSQL**
+* **MySQL** *(Not implemented. Contribution welcome!)*
 
 ## Usage
 
-*Soon!*
+```js
+const builder = require('sql-filter');
+
+const filterOptions = {
+  adapter: 'postgresql',
+  operator: '=',
+  placeholder: '$?'
+};
+
+const userSearchFilter = builder('{ username, first_name, last_name }', filterOptions);
+
+filterOptions.operator = 'ILIKE';
+
+const inventorySearchFilter = builder('properties[].{ name, value }', filterOptions);
+
+
+// userSearchFilter.toString()
+// -> 'username = $? OR first_name = $? OR last_name = $?'
+// inventorySearchFilter.toString()
+// -> 'properties IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(properties) AS _properties WHERE _properties->>\'name\' ILIKE $?::TEXT OR _properties->>\'value\' ILIKE $?::TEXT)''
+
+let query1 = db.query('SELECT * FROM users WHERE ' + userSearchFilter.apply('John'));
+query1.on('row', function (row) {
+  console.log('* User', row);
+});
+
+let query2 = db.query('SELECT * FROM inventory_vw WHERE ' + inventorySearchFilter('%pvc%'))
+query2.on('row', function (row) {
+  console.log('* Inventory', row);
+});
+
+```
+
+**NOTE**: this module does not guarantee that the given fields exists, and only
+help generating queries.
 
 ## Contribution
 
