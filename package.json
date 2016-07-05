@@ -2,7 +2,7 @@
   "name": "sql-filter",
   "description": "Create SQL filters from patterns",
   "author": "Yanick Rochon <yanick.rochon@gmail.com>",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "ISC",
   "keywords": [
     "sql",
@@ -16,7 +16,8 @@
   "scripts": {
     "test": "mocha test",
     "test-cov": "istanbul cover _mocha",
-    "test-travis": "istanbul cover _mocha --report lcovonly"
+    "test-travis": "istanbul cover _mocha --report lcovonly",
+    "build-parser": "pegjs parser.syntax.pegjs lib/parser.js"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
+    "pegjs": "^0.9.0",
     "should": "^9.0.2"
   }
 }

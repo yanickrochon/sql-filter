@@ -3,21 +3,23 @@
 describe('Testing Compiler', function () {
 
   const compile = require('../../lib/compiler');
+  const DEFAULT_VALUE_OUT = { argument: '@1' };
+
 
   it('should return simple value', function () {
-    compile('a', 'test').should.deepEqual({ 'a': 'test' });
+    compile('a', 'test').should.deepEqual({ 'a': DEFAULT_VALUE_OUT });
   })
 
   it('should compile simple path', function () {
     compile({
       path: [ "a", "b" ]
-    }, 'test').should.deepEqual({ 'a.b': 'test' });
+    }).should.deepEqual({ 'a.b': DEFAULT_VALUE_OUT });
   });
 
   it('should compile simple list', function () {
     compile({
       glue: 'OR', list: [ 'a', 'b' ]
-    }, 'test').should.deepEqual({ $OR: { 'a': 'test', 'b': 'test' } });
+    }).should.deepEqual({ $OR: { 'a': DEFAULT_VALUE_OUT, 'b': DEFAULT_VALUE_OUT } });
   });
 
   it('should compile path + list', function () {
@@ -30,7 +32,7 @@ describe('Testing Compiler', function () {
           "list": [ "c", "d" ]
         }
       ]
-    }, 'test').should.deepEqual({ $OR: { 'a.b.c': 'test', 'a.b.d': 'test' } });
+    }).should.deepEqual({ $OR: { 'a.b.c': DEFAULT_VALUE_OUT, 'a.b.d': DEFAULT_VALUE_OUT } });
   });
 
   it('should permute two lists', function () {
@@ -45,7 +47,7 @@ describe('Testing Compiler', function () {
           "list": [ "c", "d" ]
         }
       ]
-    }, 'test').should.deepEqual({ $OR: [{ $AND: { 'a.c': 'test', 'a.d': 'test' } }, { $AND: { 'b.c': 'test', 'b.d': 'test' } }] });
+    }).should.deepEqual({ $OR: [{ $AND: { 'a.c': DEFAULT_VALUE_OUT, 'a.d': DEFAULT_VALUE_OUT } }, { $AND: { 'b.c': DEFAULT_VALUE_OUT, 'b.d': DEFAULT_VALUE_OUT } }] });
 
     compile({
       "path": [
@@ -64,7 +66,7 @@ describe('Testing Compiler', function () {
           ]
         }
       ]
-    }, 'test').should.deepEqual({ $AND: { 'a.b.d.e.f': 'test', 'a.c.d.e.f': 'test' } });
+    }).should.deepEqual({ $AND: { 'a.b.d.e.f': DEFAULT_VALUE_OUT, 'a.c.d.e.f': DEFAULT_VALUE_OUT } });
 
     compile({
       "path": [
@@ -84,14 +86,14 @@ describe('Testing Compiler', function () {
           ]
         }
       ]
-    }, 'test').should.deepEqual({ $AND: [{ $OR: { 'a.b.d.e.f': 'test', 'a.b.d.g': 'test' } }, { $OR: { 'a.c.d.e.f': 'test', 'a.c.d.g': 'test' } }] });
+    }).should.deepEqual({ $AND: [{ $OR: { 'a.b.d.e.f': DEFAULT_VALUE_OUT, 'a.b.d.g': DEFAULT_VALUE_OUT } }, { $OR: { 'a.c.d.e.f': DEFAULT_VALUE_OUT, 'a.c.d.g': DEFAULT_VALUE_OUT } }] });
   });
 
   it('should compile simple array', function () {
     compile({
       "array": "a",
       "path": [ "b" ]
-    }, 'test').should.deepEqual({ '@a': { 'b': 'test' } })
+    }).should.deepEqual({ '@a': { 'b': DEFAULT_VALUE_OUT } })
 
     compile({
       "path": [
@@ -111,7 +113,7 @@ describe('Testing Compiler', function () {
         },
         "f"
       ]
-    }, 'test').should.deepEqual({ $OR: { '@a.b': { 'c.f': 'test' }, '@a.d': { 'e.f': 'test' } } });
+    }).should.deepEqual({ $OR: { '@a.b': { 'c.f': DEFAULT_VALUE_OUT }, '@a.d': { 'e.f': DEFAULT_VALUE_OUT } } });
 
     compile({
       "path": [
@@ -136,7 +138,7 @@ describe('Testing Compiler', function () {
         },
         "g"
       ]
-    }, 'test').should.deepEqual({ $OR: { '@a.b': { $AND: { 'c.g': 'test', 'd.g': 'test' } }, '@a.e': { 'f.g': 'test'} } })
+    }).should.deepEqual({ $OR: { '@a.b': { $AND: { 'c.g': DEFAULT_VALUE_OUT, 'd.g': DEFAULT_VALUE_OUT } }, '@a.e': { 'f.g': DEFAULT_VALUE_OUT} } })
   });
 
   it('should compile two arrays', function () {
@@ -148,7 +150,7 @@ describe('Testing Compiler', function () {
           "path": [ "c" ]
         }
       ]
-    }, 'test').should.deepEqual({ '@a': { '@b': { 'c': 'test' } } });
+    }).should.deepEqual({ '@a': { '@b': { 'c': DEFAULT_VALUE_OUT } } });
 
     compile({
      "path": [
@@ -168,7 +170,7 @@ describe('Testing Compiler', function () {
         },
         "f"
       ]
-    }, 'test').should.deepEqual({ $OR: { '@a.b': { 'c.f': 'test' }, '@a.d': { 'e.f': 'test' } } });
+    }).should.deepEqual({ $OR: { '@a.b': { 'c.f': DEFAULT_VALUE_OUT }, '@a.d': { 'e.f': DEFAULT_VALUE_OUT } } });
 
     compile({
       "glue": "OR",
@@ -182,7 +184,78 @@ describe('Testing Compiler', function () {
           "path": [ "c" ]
         }
      ]
-   }, 'test').should.deepEqual({ $OR: { '@a': { 'b': 'test', 'c': 'test' } } });
+   }).should.deepEqual({ $OR: { '@a': { 'b': DEFAULT_VALUE_OUT, 'c': DEFAULT_VALUE_OUT } } });
   });
+
+
+  it('should compile with optional operator', function () {
+    compile({
+      "path": [
+        "a"
+      ],
+      "options": {
+        "operator": "<>"
+      }
+    }).should.deepEqual({ 'a': { argument: '@1', operator: '<>' } });
+
+    compile({
+      "path": [
+        "a",
+        {
+          "glue": "OR",
+          "list": [
+            {
+              "path": [ "b" ],
+              "options": {
+                "operator": "<"
+              }
+            },
+            {
+              "path": [ "b" ],
+              "options": {
+                "operator": ">"
+              }
+            }
+          ]
+        }
+      ]
+    }).should.deepEqual({ 
+      $OR: {
+        'a.b': [ { argument: '@1', operator: '<' }, { argument: '@1', operator: '>' } ]
+      }
+    });
+
+    compile({
+      "path": [
+        "a",
+        {
+          "glue": "OR",
+          "list": [
+            {
+              "path": [ "b" ],
+              "options": {
+                "argument": 1,
+                "operator": "<"
+              }
+            },
+            {
+              "path": [ "b" ],
+              "options": {
+                "argument": 2,
+                "operator": ">"
+              }
+            }
+          ]
+        }
+      ]
+    }).should.deepEqual({ 
+      $OR: {
+        'a.b': [ { argument: '@1', operator: '<' }, { argument: '@2', operator: '>' } ]
+      }
+    });
+  });
+
+
+
 
 });

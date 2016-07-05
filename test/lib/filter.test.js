@@ -11,7 +11,7 @@ describe('Testing filter', function () {
     const query = 'a';
     const filter = builder(query, options);
 
-    filter.toString().should.equal('a = %%VALUE%%');
+    filter.toString().should.equal('a = @1');
     filter.apply('foo').should.equal("a = 'foo'");
     filter.apply(123).should.equal("a = 123");
   });
@@ -23,7 +23,7 @@ describe('Testing filter', function () {
     const query = '{a,b}';
     const filter = builder(query, options);
 
-    filter.toString().should.equal('a = %%VALUE%% OR b = %%VALUE%%');
+    filter.toString().should.equal('a = @1 OR b = @1');
     filter.apply('foo').should.equal("a = 'foo' OR b = 'foo'");
     filter.apply(123).should.equal("a = 123 OR b = 123");
   });
@@ -35,7 +35,7 @@ describe('Testing filter', function () {
     const query = 'a[].b';
     const filter = builder(query, options);
     
-    filter.toString().should.equal("a IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(a) AS _a WHERE _a->>'b' = %%VALUE%%::TEXT)");
+    filter.toString().should.equal("a IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(a) AS _a WHERE _a->>'b' = @1::TEXT)");
     filter.apply('foo').should.equal("a IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(a) AS _a WHERE _a->>'b' = 'foo'::TEXT)");
     filter.apply(123).should.equal("a IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(a) AS _a WHERE _a->>'b' = 123::TEXT)");
   });
