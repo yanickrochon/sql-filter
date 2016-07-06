@@ -22,6 +22,8 @@ describe('Testing PostgreSQL adapter', function () {
     value(undefined).should.equal('null');
     value({ foo: 'bar' }).should.equal('\'{"foo":"bar"}\'');
     value([1,2,3]).should.equal('\'[1,2,3]\'');
+    value(Symbol('$1')).should.equal('$1');
+    value(Symbol.for('$2')).should.equal('$2');
   })
 
   it('should build simple query', function () {
