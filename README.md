@@ -29,32 +29,26 @@ const builder = require('sql-filter');
 
 const filterOptions = {
   adapter: 'postgresql',
-  operator: '=',
-  placeholder: '$?'
+  operator: '='
 };
 
 const userSearchFilter = builder('{ username, first_name, last_name }', filterOptions);
-
-filterOptions.operator = 'ILIKE';
-
-const inventorySearchFilter = builder('properties[].{ name, value }', filterOptions);
-
+const inventorySearchFilter = builder('properties[].{ name(ILIKE,1), value(>=,2) }', filterOptions);
 
 // userSearchFilter.toString()
-// -> 'username = $? OR first_name = $? OR last_name = $?'
+// -> 'username = @1 OR first_name = @1 OR last_name = @1'
 // inventorySearchFilter.toString()
-// -> 'properties IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(properties) AS _properties WHERE _properties->>\'name\' ILIKE $?::TEXT OR _properties->>\'value\' ILIKE $?::TEXT)''
+// -> 'properties IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(properties) AS _properties WHERE _properties->>\'name\' ILIKE @1::TEXT OR _properties->>\'value\' >= @2::TEXT)'
 
 let query1 = db.query('SELECT * FROM users WHERE ' + userSearchFilter.apply('John'));
 query1.on('row', function (row) {
   console.log('* User', row);
 });
 
-let query2 = db.query('SELECT * FROM inventory_vw WHERE ' + inventorySearchFilter('%pvc%'))
+let query2 = db.query('SELECT * FROM inventory_vw WHERE ' + inventorySearchFilter.apply('%pvc%', 3))
 query2.on('row', function (row) {
   console.log('* Inventory', row);
 });
-
 ```
 
 **NOTE**: this module does not guarantee that the given fields exists, and only

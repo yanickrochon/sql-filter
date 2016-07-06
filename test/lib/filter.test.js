@@ -61,6 +61,16 @@ describe('Testing filter', function () {
     filter.apply(10, 30).should.equal('a < 10 OR a > 30');
   });
 
+  it('should create with array and multiple arguments', function () {
+    const options = {
+      adatper: 'postgresql'
+    };
+    const query = 'properties[].{ name(ILIKE,1), value(>=,2) }';
+    const filter = builder(query, options);
 
+    filter.toString().should.equal('properties IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(properties) AS _properties WHERE _properties->>\'name\' ILIKE @1::TEXT OR _properties->>\'value\' >= @2::TEXT)');
+    filter.apply('foo', 90).should.equal('properties IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(properties) AS _properties WHERE _properties->>\'name\' ILIKE \'foo\'::TEXT OR _properties->>\'value\' >= 90::TEXT)');
+
+  });
 
 });
