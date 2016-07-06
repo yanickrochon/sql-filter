@@ -21,9 +21,9 @@ FieldArray
 
 FieldPath
  = f:( FieldList / FieldArray / FieldName) n:( FieldSeparator ( FieldList / FieldArray / FieldName)) * o:FieldOptions ? { var path = { path: [f].concat(n.map(function (i) { return i[1]; })) }; if (o) path.options = o; return path; }
- 
+
 FieldOptions
- = '(' o:[^,)]+ a:( ',' v:[0-9]+ { return parseInt(v.join(''), 10); } ) ? ')' { var options = { operator: o.join('') }; if (a) options.argument = a; return options; }
+ = '(' o:[^,)]+ a:( ',' v:[0-9]+ { return parseInt(v.join(''), 10); } ) * ')' { var options = { operator: o.join('') }; if (a.length) options.arguments = a; return options; }
 
 FieldList
  = '{{' Space* list:( l:Expression r:( Space* ',' Space* e:Expression { return e; } )* { return [l].concat(r); }  ) Space* '}}' { return { glue: 'AND', list: list }; }

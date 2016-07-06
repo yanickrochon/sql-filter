@@ -34,11 +34,33 @@ describe('Testing filter', function () {
     };
     const query = 'a[].b';
     const filter = builder(query, options);
-    
+
     filter.toString().should.equal("a IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(a) AS _a WHERE _a->>'b' = @1::TEXT)");
     filter.apply('foo').should.equal("a IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(a) AS _a WHERE _a->>'b' = 'foo'::TEXT)");
     filter.apply(123).should.equal("a IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(a) AS _a WHERE _a->>'b' = 123::TEXT)");
   });
+
+  it('should create with custom operator', function () {
+    const options = {
+      adatper: 'postgresql'
+    };
+    const query = 'a(>)';
+    const filter = builder(query, options);
+
+    filter.toString().should.equal('a > @1');
+  });
+
+  it('should create with multiple arguments', function () {
+    const options = {
+      adatper: 'postgresql'
+    };
+    const query = '{a(<,1),a(>,2)}';
+    const filter = builder(query, options);
+
+    filter.toString().should.equal('a < @1 OR a > @2');
+    filter.apply(10, 30).should.equal('a < 10 OR a > 30');
+  });
+
 
 
 });
