@@ -140,4 +140,17 @@ describe('Testing parser', function () {
     });
   });
 
+  it('should parse with params', function () {
+    parse('a(=)').should.deepEqual({ path: [ 'a' ], options: { operator: '=' } });
+    parse(' a ( = ) ').should.deepEqual({ path: [ 'a' ], options: { operator: '=' } });
+    parse(' a ( <=, 1 ) ').should.deepEqual({ path: [ 'a' ], options: { operator: '<=', arguments: [1] } });
+    parse(' a ( FOOBAR!, 1 ,  10, 9999 ) ').should.deepEqual({ path: [ 'a' ], options: { operator: 'FOOBAR!', arguments: [1,10,9999] } });
+
+    parse('a[].b(=)').should.deepEqual({ array: 'a', path: [ 'b' ], options: { operator: '=' } });
+    parse(' a [] . b ( = ) ').should.deepEqual({ array: 'a', path: [ 'b' ], options: { operator: '=' } });
+    parse(' a [] .  b ( <=, 1 ) ').should.deepEqual({ array: 'a', path: [ 'b' ], options: { operator: '<=', arguments: [1] } });
+    parse(' a[].b ( FOOBAR!, 1 ,  10, 9999 ) ').should.deepEqual({ array: 'a', path: [ 'b' ], options: { operator: 'FOOBAR!', arguments: [1,10,9999] } });
+
+  });
+
 });
