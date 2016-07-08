@@ -11,7 +11,7 @@ describe('Testing PostgreSQL adapter', function () {
     fieldWrapper: function (f) { return f; },
     valueWrapper: function (v) { return v; }
   };
-  const placeholder = { arguments: ['@1'] };
+  const placeholder = { arguments: [1] };
 
   it('should format data types', function () {
     value('foo').should.equal("'foo'");
@@ -66,11 +66,11 @@ describe('Testing PostgreSQL adapter', function () {
     });
 
     it('should validate BETWEEN operator', function () {
-      build({ 'a': { operator: 'between', arguments: ['@1','@2'] }}).should.equal('a BETWEEN @1 AND @2');
+      build({ 'a': { operator: 'between', arguments: [1, 2] }}).should.equal('a BETWEEN @1 AND @2');
     });
 
     it('should fail if BETWEEN has not enough arguments', function () {
-      (function () { build({ 'a': { operator: 'between', arguments: ['@1'] }}); }).should.throw('Found 1 arguments, but required 2');
+      (function () { build({ 'a': { operator: 'between', arguments: [1] }}); }).should.throw('Found 1 arguments, but required 2');
     });
 
   });

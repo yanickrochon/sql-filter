@@ -3,7 +3,7 @@
 describe('Testing Compiler', function () {
 
   const compile = require('../../lib/compiler');
-  const DEFAULT_VALUE_OUT = { arguments: ['@1'] };
+  const DEFAULT_VALUE_OUT = { arguments: [ 1 ] };
 
 
   it('should return simple value', function () {
@@ -196,7 +196,7 @@ describe('Testing Compiler', function () {
       "options": {
         "operator": "<>"
       }
-    }).should.deepEqual({ 'a': { arguments: ['@1'], operator: '<>' } });
+    }).should.deepEqual({ 'a': { arguments: [1], operator: '<>' } });
 
     compile({
       "path": [
@@ -221,7 +221,7 @@ describe('Testing Compiler', function () {
       ]
     }).should.deepEqual({
       $OR: {
-        'a.b': [ { arguments: ['@1'], operator: '<' }, { arguments: ['@1'], operator: '>' } ]
+        'a.b': [ { arguments: [1], operator: '<' }, { arguments: [1], operator: '>' } ]
       }
     });
 
@@ -245,7 +245,7 @@ describe('Testing Compiler', function () {
       ]
     }).should.deepEqual({
       $OR: {
-        'a': [ { arguments: ['@1'], operator: '<' }, { arguments: ['@2'], operator: '>' } ]
+        'a': [ { arguments: [1], operator: '<' }, { arguments: [2], operator: '>' } ]
       }
     });
   });

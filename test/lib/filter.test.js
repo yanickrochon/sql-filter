@@ -70,7 +70,38 @@ describe('Testing filter', function () {
 
     filter.toString().should.equal('properties IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(properties) AS _properties WHERE _properties->>\'name\' ILIKE @1::TEXT OR _properties->>\'value\' >= @2::TEXT)');
     filter.apply('foo', 90).should.equal('properties IS NOT NULL AND EXISTS (SELECT * FROM json_array_elements(properties) AS _properties WHERE _properties->>\'name\' ILIKE \'foo\'::TEXT OR _properties->>\'value\' >= 90::TEXT)');
+  });
 
+  it('should not build with invalid adapter', function () {
+    [
+      undefined, null, NaN, true, false, 
+      -1, 0, 1, Infinity,
+      [], {}, /./, function () {}
+    ].forEach(function (adapter) {
+      (function () { builder('a', { adapter: adapter }); }).should.throw();
+    });
+  });
+
+  it('should not build with invalid value wrapper', function () {
+    [
+      undefined, null, NaN, true, false, 
+      -1, 0, 1, Infinity,
+      '', 'foo',
+      [], {}, /./
+    ].forEach(function (wrapper) {
+      (function () { builder('a', { valueWrapper: wrapper }); }).should.throw();
+    });
+  });
+
+  it('should not build with invalid field wrapper', function () {
+    [
+      undefined, null, NaN, true, false, 
+      -1, 0, 1, Infinity,
+      '', 'foo',
+      [], {}, /./
+    ].forEach(function (wrapper) {
+      (function () { builder('a', { fieldWrapper: wrapper }); }).should.throw();
+    });
   });
 
 });
