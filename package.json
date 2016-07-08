@@ -2,7 +2,7 @@
   "name": "sql-filter",
   "description": "Create SQL filters from patterns",
   "author": "Yanick Rochon <yanick.rochon@gmail.com>",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "ISC",
   "keywords": [
     "sql",
