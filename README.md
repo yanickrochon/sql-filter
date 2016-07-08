@@ -21,6 +21,7 @@ required against various data types and structures.
 
 * **PostreSQL**
 * **MySQL** *(Not implemented. Contribution welcome!)*
+* *more?*
 
 ## Usage
 
@@ -28,7 +29,10 @@ required against various data types and structures.
 const builder = require('sql-filter');
 
 const filterOptions = {
+  // build a PostreSQL query (this is the default value)
   adapter: 'postgresql',
+  // when no operator is specified, use this operator
+  // (this is the default value)
   operator: '='
 };
 
@@ -53,6 +57,119 @@ query2.on('row', function (row) {
 
 **NOTE**: this module does not guarantee that the given fields exists, and only
 help generating queries.
+
+
+## Syntax
+
+### fields
+
+Fields, or column names, are represented as is. For example, generating a filter
+to search for a given user :
+
+```js
+const userById = builder('id');
+const query = 'SELECT * FROM users' +
+              ' WHERE ' + userById.apply(123);
+```
+
+Naturally, filters may be re-used.
+
+```js
+const userById = builder('id');
+const query = 'SELECT * FROM users' +
+              ' WHERE ' + userById.apply(123) +
+                 ' OR ' + userById.apply(456);
+```
+
+When aggregating data across tables, using functions to return JSON data types,
+or even when a table needs to filter from a JSON column type, searching deep
+within these structures may be combersome otherwise.
+
+```js
+const issuesByOwner = builder('user.username');
+// fetch from a VIEW which aggregates from users
+const query = 'SELECT * FROM issues_vw' +
+              ' WHERE ' + issuesByOwner.apply('john.smith@email.com');
+```
+
+### Arrays
+
+Like for fields, arrays allow looking inside an enumeration. Useful when searching
+JSON arrays.
+
+```js
+const recipesByIngredient = builder('ingredients[].name');
+const query = 'SELECT * FROM recipees' +
+              ' WHERE ' + recipesByIngredient.apply('avocado');
+```
+
+Arrays can be nested just fine, too!
+
+```js
+const recipesByIngregidentsInStep = builder('steps[].ingredients[].name');
+const query = 'SELECT * FROM recipees' +
+              ' WHERE ' + recipesByIngregidentsInStep.apply('avocado');
+```
+
+### Field Operator
+
+*TODO*
+
+### Field Arguments
+
+*TODO*
+
+### Branching
+
+Instead of repeating patterns, why not specify everything into a single one?
+
+```js
+const userByString = builder('{username,first_name,last_name}');
+const query = 'SELECT * FROM users' +
+              ' WHERE ' + userByString.apply('Bob');
+```
+
+*TODO*
+
+## BUilder options
+
+### Adapter
+
+*TODO*
+
+### Default Operator
+
+*TODO*
+
+### Field Name wrapper
+
+*TODO*
+
+### Value wrapper
+
+*TODO*
+
+
+## Adapters
+
+### Custom Operator Management
+
+For complex filters, where built-in operators are simply not enough, it may be
+required to register a new one, to evaluate fields in a customized way. For
+example :
+
+```js
+const adapter = require('sql-filter/adapter/postgresql');
+
+adapter.registerOperatorHandler('custom', function (field, oper, args, argSuffix, options) {
+  return 'customFunction(' + options.fieldWrapper(field) + ',' + args.map(options.valueWrapper).join(',') + ') = true';
+});
+```
+
+**Note**: when an operator follows the pattern `predicate operator predicate`, it
+is not necessary to register a new handler as the default handler will correctly
+display any such operator.
+
 
 ## Contribution
 
