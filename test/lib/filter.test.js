@@ -28,6 +28,30 @@ describe('Testing filter', function () {
     filter.apply(123).should.equal("a = 123 OR b = 123");
   });
 
+  it('should create AND filter', function () {
+    const options = {
+      adatper: 'postgresql'
+    };
+    const query = '{{a,b}}';
+    const filter = builder(query, options);
+
+    filter.toString().should.equal('a = @1 AND b = @1');
+    filter.apply('foo').should.equal("a = 'foo' AND b = 'foo'");
+    filter.apply(123).should.equal("a = 123 AND b = 123");
+  });
+
+  it('should create OR and AND filter', function () {
+    const options = {
+      adatper: 'postgresql'
+    };
+    const query = '{a,{{b,c}}}';
+    const filter = builder(query, options);
+
+    filter.toString().should.equal('a = @1 OR b = @1 AND c = @1');
+    filter.apply('foo').should.equal("a = 'foo' OR b = 'foo' AND c = 'foo'");
+    filter.apply(123).should.equal("a = 123 OR b = 123 AND c = 123");
+  });
+
   it('should create array filter', function () {
     const options = {
       adatper: 'postgresql'
@@ -74,7 +98,7 @@ describe('Testing filter', function () {
 
   it('should not build with invalid adapter', function () {
     [
-      undefined, null, NaN, true, false, 
+      undefined, null, NaN, true, false,
       -1, 0, 1, Infinity,
       [], {}, /./, function () {}
     ].forEach(function (adapter) {
@@ -84,7 +108,7 @@ describe('Testing filter', function () {
 
   it('should not build with invalid value wrapper', function () {
     [
-      undefined, null, NaN, true, false, 
+      undefined, null, NaN, true, false,
       -1, 0, 1, Infinity,
       '', 'foo',
       [], {}, /./
@@ -95,7 +119,7 @@ describe('Testing filter', function () {
 
   it('should not build with invalid field wrapper', function () {
     [
-      undefined, null, NaN, true, false, 
+      undefined, null, NaN, true, false,
       -1, 0, 1, Infinity,
       '', 'foo',
       [], {}, /./

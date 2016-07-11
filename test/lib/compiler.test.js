@@ -87,6 +87,26 @@ describe('Testing Compiler', function () {
         }
       ]
     }).should.deepEqual({ $AND: [{ $OR: { 'a.b.d.e.f': DEFAULT_VALUE_OUT, 'a.b.d.g': DEFAULT_VALUE_OUT } }, { $OR: { 'a.c.d.e.f': DEFAULT_VALUE_OUT, 'a.c.d.g': DEFAULT_VALUE_OUT } }] });
+
+    compile({
+      "glue": "OR",
+      "list": [
+        {
+           "path": [ "a" ]
+        },
+        {
+           "glue": "AND",
+           "list": [
+              {
+                 "path": [ "b" ]
+              },
+              {
+                 "path": [ "c" ]
+              }
+           ]
+        }
+      ]
+    }).should.deepEqual({ $OR: { a: DEFAULT_VALUE_OUT }, $AND: { b: DEFAULT_VALUE_OUT, c: DEFAULT_VALUE_OUT } });
   });
 
   it('should compile simple array', function () {

@@ -111,25 +111,47 @@ const query = 'SELECT * FROM recipees' +
               ' WHERE ' + recipesByIngregidentsInStep.apply('avocado');
 ```
 
-### Field Operator
-
-*TODO*
-
-### Field Arguments
-
-*TODO*
-
 ### Branching
 
 Instead of repeating patterns, why not specify everything into a single one?
 
 ```js
-const userByString = builder('{username,first_name,last_name}');
-const query = 'SELECT * FROM users' +
-              ' WHERE ' + userByString.apply('Bob');
+// search username OR first_name OR last_name
+const userByStringOR = builder('{username,first_name,last_name}');
+const queryOR = 'SELECT * FROM users' +
+                ' WHERE ' + userByStringOR.apply('Bob');
+// search username AND first_name AND last_name
+const userByStringAND = builder('{{username,first_name,last_name}}');
+const queryAND = 'SELECT * FROM users ' +
+                 ' WHERE ' + userByStringAND.apply('Joe');
 ```
 
-*TODO*
+### Field Operator
+
+By default, field operators may be specified as an option argument of the builder
+function.
+
+```js
+const filter = builder('a', { operator: 'LIKE'});
+const query = 'SELECT * FROM tbl WHERE ' + filter.apply('%foo%');
+```
+
+Or it may be specified directly in the pattern.
+
+```js
+const filter = builder('a(LIKE)');
+const query = 'SELECT * FROM tbl WHERE ' + filter.apply('%foo%');
+```
+
+### Field Arguments
+
+To supply more than one values in the filter, the value order may be specified
+after specifying an operator.
+
+```js
+const filter = builder('{{username(LIKE,1),status(=,2)}}');
+const query = 'SELECT * FROM users WHERE ' + filter.apply('%john%', true);
+```
 
 ## BUilder options
 
